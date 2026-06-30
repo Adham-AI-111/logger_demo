@@ -1,19 +1,4 @@
 from django.db import models
-import mysql.connector
-
-
-# MyDB = mysql.connector.connect(
-#     host="localhost",
-#     user="root",
-#     password=
-#     database="crm_db",
-
-
-
-# coursorObj = MyDB.cursor()
-# coursorObj.execute("CREATE DATABASE IF NOT EXISTS crm_db")
-# print("Database created successfully")
-# MyDB.database = "crm_db"
 
 class Record(models.Model):
     name = models.CharField(max_length=200)

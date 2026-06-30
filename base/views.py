@@ -4,6 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import RegisterForm, UpdateRecordForm
 from .models import Record
+import logging
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     if request.method == 'POST':
@@ -54,6 +57,7 @@ def display_record(request, pk):
         return redirect('home')
     return render(request, 'base/record.html') 
 
+
 def delete_record(request, pk):
     if request.user.is_authenticated:
         customer_record = Record.objects.get(id=pk)
@@ -64,6 +68,7 @@ def delete_record(request, pk):
         messages.error(request, "You must be logged in to perform that action.")
         return redirect('home')
     return render(request, 'base/record.html')
+
 
 def update_record(request, pk):
     if request.user.is_authenticated:
@@ -82,21 +87,19 @@ def update_record(request, pk):
             return render(request, 'base/update_record.html', {'form': form})
     return render(request, 'base/update_record.html')
 
+
+@login_required
 def add_record(request):
-    if request.user.is_authenticated:
-        form = UpdateRecordForm()
-        if request.method == 'POST':
-            form = UpdateRecordForm(request.POST)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Record added successfully.")
-                return redirect('home')
-            else:
-                messages.error(request, "Failed to add record. Please correct the errors below.")
-                return render(request, 'base/add_record.html', {'form': form})
+    if request.method == 'POST':
+        form = UpdateRecordForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Record added successfully.")
+            logger.info('record added successfully')
+            return redirect('home')
         else:
+            messages.error(request, "Failed to add record. Please correct the errors below.")
             return render(request, 'base/add_record.html', {'form': form})
     else:
-        messages.error(request, "You must be logged in to perform that action.")
-        return redirect('home')
+        form = UpdateRecordForm()
     return render(request, 'base/add_record.html')
